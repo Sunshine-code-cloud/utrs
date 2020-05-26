@@ -157,15 +157,14 @@ class AdminController extends Controller
         if (!Permission::checkToolAdmin(Auth::id(), "*")) {
             abort(401);
         }
-        $ua = $request->userAgent();
+        $ua = $request->cutUaString();
         $ip = $request->ip();
 
-        $lang = $request->header('Accept-Language');
         $newtemplate = $request->all();
         $name = $newtemplate['name'];
         $template = $newtemplate['template'];
         $creation = Template::create(['name' => $name, 'template' => $template, 'active' => 1]);
-        $log = Log::create(array('user' => Auth::id(), 'referenceobject' => $creation->id, 'objecttype' => 'template', 'action' => 'create', 'ip' => $ip, 'ua' => $ua . " " . $lang));
+        $log = Log::create(array('user' => Auth::id(), 'referenceobject' => $creation->id, 'objecttype' => 'template', 'action' => 'create', 'ip' => $ip, 'ua' => $ua));
         return Redirect::to('/admin/templates');
     }
 
