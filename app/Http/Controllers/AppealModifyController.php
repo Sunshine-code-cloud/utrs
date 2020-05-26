@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Appeal;
 use App\Log;
 use Illuminate\Http\Request;
-use Redirect;
-use Validator;
 use App\Jobs\GetBlockDetailsJob;
 
 class AppealModifyController extends Controller
@@ -22,9 +20,9 @@ class AppealModifyController extends Controller
 
     public function changeipsubmit(Request $request, $id)
     {
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $hash = $request->input('hash');
         $appeal = Appeal::where('appealsecretkey', '=', $hash)->firstOrFail();
 

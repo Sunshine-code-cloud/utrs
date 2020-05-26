@@ -18,7 +18,6 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Rules\SecretEqualsRule;
-use Illuminate\Validation\Rule;
 use App\Jobs\GetBlockDetailsJob;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -152,9 +151,9 @@ class AppealController extends Controller
 
         abort_if($appeal->status == "ACCEPT" || $appeal->status == "DECLINE" || $appeal->status == "EXPIRE", 400, "Appeal is closed");
 
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $reason = $request->input('comment');
 
         Log::create([
@@ -240,9 +239,9 @@ class AppealController extends Controller
 
     public function appealsubmit(Request $request)
     {
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $input = $request->all();
         Arr::forget($input, '_token');
         $input = Arr::add($input, 'status', 'VERIFY');
@@ -304,9 +303,9 @@ class AppealController extends Controller
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $reason = $request->input('reason');
@@ -329,9 +328,9 @@ class AppealController extends Controller
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $reason = $request->input('comment');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
@@ -350,9 +349,9 @@ class AppealController extends Controller
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         
         
         $templateObject = Template::find($template);
@@ -376,9 +375,9 @@ class AppealController extends Controller
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         if ($admin && $appeal->handlingadmin == Auth::id()) {
             $mail = Sendresponse::create(array('appealID' => $id, 'template' => 0, 'custom' => $request->input('custom')));
             $log = Log::create(array('user' => $user, 'referenceobject' => $id, 'objecttype' => 'appeal', 'action' => 'responded', 'reason' => $request->input('custom'), 'ip' => $ip, 'ua' => $ua . " " . $lang, 'protected' => 0));
@@ -430,9 +429,9 @@ class AppealController extends Controller
             abort(403, 'No logged in user');
         }
         User::findOrFail(Auth::id())->checkRead();
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user, $appeal->wiki);
@@ -451,9 +450,9 @@ class AppealController extends Controller
             abort(403, 'No logged in user');
         }
         User::findOrFail(Auth::id())->checkRead();
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $admin = Permission::checkAdmin($user, $appeal->wiki);
@@ -481,9 +480,9 @@ class AppealController extends Controller
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $user = Auth::id();
         if ($admin) {
             if ($appeal->status == "ACCEPT" || $appeal->status == "EXPIRE" || $appeal->status == "DECLINE" || $appeal->status == "CHECKUSER" || $appeal->status == "ADMIN") {
@@ -505,9 +504,9 @@ class AppealController extends Controller
             abort(403, 'No logged in user');
         }
         User::findOrFail(Auth::id())->checkRead();
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
         $dev = Permission::checkSecurity($user, "DEVELOPER", $appeal->wiki);
@@ -532,9 +531,9 @@ class AppealController extends Controller
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         if ($admin) {
             $appeal->status = strtoupper($type);
             $appeal->save();
@@ -555,9 +554,9 @@ class AppealController extends Controller
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         if ($admin && $appeal->status !== "CHECKUSER") {
             $appeal->status = "CHECKUSER";
             $appeal->save();
@@ -578,9 +577,9 @@ class AppealController extends Controller
         $user = Auth::id();
         $admin = Permission::checkAdmin($user, $appeal->wiki);
         abort_if(!$admin,403,"You are not an administrator on the wiki this appeal is for");
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         if ($admin && $appeal->status !== "ADMIN") {
             $appeal->status = "ADMIN";
             $appeal->save();
@@ -609,9 +608,9 @@ class AppealController extends Controller
             'user_verified' => true,
         ]);
 
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
 
         Log::create([
             'user' => 0,
@@ -632,9 +631,9 @@ class AppealController extends Controller
         User::findOrFail(Auth::id())->checkRead();
         $user = Auth::id();
         $appeal = Appeal::findOrFail($id);
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
 
         $dev = Permission::checkSecurity($user, "DEVELOPER", $appeal->wiki);
         if ($dev && ($appeal->status == "NOTFOUND" || $appeal->status == "VERIFY")) {

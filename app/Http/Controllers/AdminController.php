@@ -157,10 +157,10 @@ class AdminController extends Controller
         if (!Permission::checkToolAdmin(Auth::id(), "*")) {
             abort(401);
         }
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
 
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $newtemplate = $request->all();
         $name = $newtemplate['name'];
         $template = $newtemplate['template'];
@@ -174,9 +174,9 @@ class AdminController extends Controller
         if (!Permission::checkToolAdmin(Auth::id(), "*")) {
             abort(401);
         }
-        $ua = $request->server('HTTP_USER_AGENT');
+        $ua = $request->userAgent();
         $ip = $request->ip();
-        $lang = $request->server('HTTP_ACCEPT_LANGUAGE');
+        $lang = $request->header('Accept-Language');
         $data = $request->all();
         $template = Template::findOrFail($id);
         $template->name = $data['name'];
